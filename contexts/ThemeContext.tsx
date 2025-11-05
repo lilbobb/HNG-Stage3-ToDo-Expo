@@ -22,7 +22,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       if (savedTheme !== null) {
         setIsDarkTheme(savedTheme === 'dark');
       } else {
-        // Use system preference if no saved preference
         const colorScheme = Appearance.getColorScheme();
         setIsDarkTheme(colorScheme === 'dark');
       }

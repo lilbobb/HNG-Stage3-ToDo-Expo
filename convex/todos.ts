@@ -6,6 +6,7 @@ export const getTodos = query({
   handler: async (ctx) => {
     return await ctx.db
       .query('todos')
+      .withIndex('by_created')
       .order('desc')
       .collect();
   },
@@ -55,5 +56,20 @@ export const clearCompleted = mutation({
       .collect();
 
     await Promise.all(completedTodos.map((todo) => ctx.db.delete(todo._id)));
+  },
+});
+
+// Add this new mutation for drag and drop reordering
+export const updateTodoOrder = mutation({
+  args: { 
+    orderedIds: v.array(v.id('todos')) 
+  },
+  handler: async (ctx, args) => {
+    // Update each todo with its new order position
+    for (let i = 0; i < args.orderedIds.length; i++) {
+      await ctx.db.patch(args.orderedIds[i], { 
+        order: i 
+      });
+    }
   },
 });

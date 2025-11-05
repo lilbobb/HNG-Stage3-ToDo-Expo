@@ -42,14 +42,17 @@ export const styles = (isDark: boolean) => {
       flex: 1,
     },
     header: {
-      paddingHorizontal: 24,
       paddingTop: 48,
       paddingBottom: 24,
+      width: isMobile ? '100%' : 540, 
+      alignSelf: 'center', 
+      paddingHorizontal: isMobile ? 24 : 0, 
     },
     headerRow: {
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
+      paddingHorizontal: isMobile ? 0 : 20, 
     },
     title: {
       fontSize: 32,
@@ -61,6 +64,7 @@ export const styles = (isDark: boolean) => {
       flex: 1,
       paddingHorizontal: 24,
       marginTop: -40,
+      alignItems: 'center', 
     },
     todoContainer: {
       backgroundColor: theme.surface,
@@ -73,12 +77,11 @@ export const styles = (isDark: boolean) => {
       marginBottom: 16,
       maxHeight: isMobile ? 500 : 600,
       overflow: 'hidden',
+      width: isMobile ? '100%' : 540, 
     },
     todoList: {
       maxHeight: 400,
     },
-    
-    // Desktop Footer (hidden on mobile) - All three elements
     footer: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -87,11 +90,7 @@ export const styles = (isDark: boolean) => {
       paddingVertical: 16,
       borderTopWidth: 1,
       borderTopColor: theme.border,
-      // Hide on mobile, show on desktop
-      display: isMobile ? 'none' : 'flex',
     },
-    
-    // Mobile Footer - Items Count + Clear Completed (INSIDE todo container)
     mobileFooter: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -101,22 +100,14 @@ export const styles = (isDark: boolean) => {
       backgroundColor: theme.todoBackground,
       borderBottomLeftRadius: 5,
       borderBottomRightRadius: 5,
-      // Show only on mobile
-      display: isMobile ? 'flex' : 'none',
     },
-    
-    // Mobile Filter Section - Filter Buttons in separate section BELOW todo container
     mobileFilterSection: {
       backgroundColor: theme.todoBackground,
       borderRadius: 5,
       marginTop: 16,
-      // Show only on mobile
-      display: isMobile ? 'flex' : 'none',
-      width: 364,
+      width: isMobile ? 364 : 540, 
       alignSelf: 'center',
     },
-    
-    // Filter Buttons Container - Same styling as input
     filterButtonsContainer: {
       flexDirection: 'row', 
       alignItems: 'center', 
@@ -124,7 +115,6 @@ export const styles = (isDark: boolean) => {
       paddingHorizontal: 20,
       paddingVertical: 18,
     },
-    
     itemsLeft: {
       fontSize: 14,
       color: theme.textSecondary,
@@ -150,6 +140,8 @@ export const styles = (isDark: boolean) => {
       fontSize: 14,
       color: theme.textSecondary,
       marginTop: isMobile ? 80 : 16,
+      width: isMobile ? '100%' : 540, 
+      alignSelf: 'center',
     },
   });
 };

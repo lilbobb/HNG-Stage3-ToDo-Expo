@@ -2,30 +2,37 @@ import React from 'react';
 import { Stack } from 'expo-router';
 import { ConvexProvider, ConvexReactClient } from 'convex/react';
 import { ThemeProvider } from '../contexts/ThemeContext';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-// Expo automatically reads from .env, no need for dotenv
 const convexUrl = process.env.EXPO_PUBLIC_CONVEX_URL;
 
 if (!convexUrl) {
   console.error('Missing EXPO_PUBLIC_CONVEX_URL environment variable');
-  // You can provide a fallback or throw an error
 }
 
 const convex = new ConvexReactClient(convexUrl!);
 
 export default function RootLayout() {
   return (
-    <ConvexProvider client={convex}>
-      <ThemeProvider>
-        <Stack>
-          <Stack.Screen 
-            name="index" 
-            options={{ 
-              headerShown: false
-            }} 
-          />
-        </Stack>
-      </ThemeProvider>
-    </ConvexProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ConvexProvider client={convex}>
+        <ThemeProvider>
+          <Stack>
+            <Stack.Screen 
+              name="index" 
+              options={{ 
+                headerShown: false
+              }} 
+            />
+            <Stack.Screen 
+              name="+not-found" 
+              options={{ 
+                headerShown: false
+              }} 
+            />
+          </Stack>
+        </ThemeProvider>
+      </ConvexProvider>
+    </GestureHandlerRootView>
   );
 }
