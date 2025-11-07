@@ -29,6 +29,7 @@ export default function TodoApp() {
   const { isDarkTheme } = useTheme();
   const styles = themeStyles(isDarkTheme);
   const [filter, setFilter] = useState<FilterType>('all');
+  const [isClearing, setIsClearing] = useState(false);
 
   const todos = useQuery(api.todos.getTodos) || [];
   const clearCompleted = useMutation(api.todos.clearCompleted);
@@ -46,22 +47,44 @@ export default function TodoApp() {
   });
 
   const activeCount = todos.filter(todo => !todo.completed).length;
+  const completedCount = todos.filter(todo => todo.completed).length;
 
-  const handleClearCompleted = () => {
-    if (todos.some(todo => todo.completed)) {
-      Alert.alert(
-        'Clear Completed',
-        'Are you sure you want to clear all completed todos?',
-        [
-          { text: 'Cancel', style: 'cancel' },
-          { 
-            text: 'Clear', 
-            style: 'destructive',
-            onPress: () => clearCompleted()
-          }
-        ]
-      );
+  const handleClearCompleted = async () => {
+    console.log('=== CLEAR COMPLETED DEBUG ===');
+    console.log('Total todos:', todos.length);
+    console.log('Completed todos:', completedCount);
+    
+    if (completedCount === 0) {
+      Alert.alert('No completed todos', 'There are no completed todos to clear.');
+      return;
     }
+
+    if (isClearing) return;
+
+    Alert.alert(
+      'Clear Completed',
+      `Are you sure you want to clear ${completedCount} completed ${completedCount === 1 ? 'todo' : 'todos'}?`,
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { 
+          text: 'Clear', 
+          style: 'destructive',
+          onPress: async () => {
+            setIsClearing(true);
+            try {
+              console.log('Calling clearCompleted mutation...');
+              const result = await clearCompleted();
+              console.log('Mutation completed, deleted count:', result);
+            } catch (error) {
+              console.error('Clear completed failed:', error);
+              Alert.alert('Error', 'Failed to clear completed todos. Please try again.');
+            } finally {
+              setIsClearing(false);
+            }
+          }
+        }
+      ]
+    );
   };
 
   const handleDragEnd = async ({ data }: { data: typeof filteredTodos }) => {
@@ -85,6 +108,8 @@ export default function TodoApp() {
     );
   };
 
+  const isClearDisabled = completedCount === 0 || isClearing;
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <KeyboardAvoidingView 
@@ -102,7 +127,9 @@ export default function TodoApp() {
         </View>
 
         <View style={styles.mainContent}>
-          <TodoInput />
+          <View style={{ width: '100%', maxWidth: 540, alignSelf: 'center' }}>
+            <TodoInput />
+          </View>
           
           <View style={styles.todoContainer}>
             <DraggableFlatList
@@ -126,44 +153,54 @@ export default function TodoApp() {
               }
             />
             
-            {Platform.OS === 'web' && (
-              <View style={styles.footer}>
-                <Text style={styles.itemsLeft}>
-                  {activeCount} {activeCount === 1 ? 'item' : 'items'} left
-                </Text>
+            {todos.length > 0 && (
+              <>
+                {Platform.OS === 'web' && (
+                  <View style={styles.footer}>
+                    <Text style={styles.itemsLeft}>
+                      {activeCount} {activeCount === 1 ? 'item' : 'items'} left
+                    </Text>
+                    
+                    <FilterButtons 
+                      currentFilter={filter}
+                      onFilterChange={setFilter}
+                    />
+                    
+                    <TouchableOpacity 
+                      onPress={handleClearCompleted}
+                      style={isClearDisabled ? styles.clearButtonDisabled : styles.clearButton}
+                      disabled={isClearDisabled}
+                      hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                    >
+                      <Text style={isClearDisabled ? styles.clearTextDisabled : styles.clearText}>
+                        {isClearing ? 'Clearing...' : 'Clear Completed'}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
                 
-                <FilterButtons 
-                  currentFilter={filter}
-                  onFilterChange={setFilter}
-                />
-                
-                <TouchableOpacity 
-                  onPress={handleClearCompleted}
-                  style={styles.clearButton}
-                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-                >
-                  <Text style={styles.clearText}>Clear Completed</Text>
-                </TouchableOpacity>
-              </View>
-            )}
-            
-            {Platform.OS !== 'web' && (
-              <View style={styles.mobileFooter}>
-                <Text style={styles.itemsLeft}>
-                  {activeCount} {activeCount === 1 ? 'item' : 'items'} left
-                </Text>
-                
-                <TouchableOpacity 
-                  onPress={handleClearCompleted}
-                  style={styles.clearButton}
-                >
-                  <Text style={styles.clearText}>Clear Completed</Text>
-                </TouchableOpacity>
-              </View>
+                {Platform.OS !== 'web' && (
+                  <View style={styles.mobileFooter}>
+                    <Text style={styles.itemsLeft}>
+                      {activeCount} {activeCount === 1 ? 'item' : 'items'} left
+                    </Text>
+                    
+                    <TouchableOpacity 
+                      onPress={handleClearCompleted}
+                      style={isClearDisabled ? styles.clearButtonDisabled : styles.clearButton}
+                      disabled={isClearDisabled}
+                    >
+                      <Text style={isClearDisabled ? styles.clearTextDisabled : styles.clearText}>
+                        {isClearing ? 'Clearing...' : 'Clear Completed'}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                )}
+              </>
             )}
           </View>
 
-          {Platform.OS !== 'web' && (
+          {Platform.OS !== 'web' && todos.length > 0 && (
             <View style={styles.mobileFilterSection}>
               <View style={styles.filterButtonsContainer}>
                 <FilterButtons 
@@ -174,9 +211,11 @@ export default function TodoApp() {
             </View>
           )}
 
-          <Text style={styles.dragHint}>
-            drag and drop to reorder list
-          </Text>
+          {todos.length > 0 && (
+            <Text style={styles.dragHint}>
+              drag and drop to reorder list
+            </Text>
+          )}
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>

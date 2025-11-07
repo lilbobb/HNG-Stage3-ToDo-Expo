@@ -4,14 +4,12 @@ import { mutation, query } from './_generated/server';
 export const getTodos = query({
   args: {},
   handler: async (ctx) => {
-    // Try to get todos by order first, then fall back to creation date
     const todosByOrder = await ctx.db
       .query('todos')
       .withIndex('by_order')
       .order('asc')
       .collect();
     
-    // If no todos have order, get by creation date
     if (todosByOrder.length === 0) {
       return await ctx.db
         .query('todos')
@@ -29,7 +27,6 @@ export const addTodo = mutation({
     text: v.string(),
   },
   handler: async (ctx, args) => {
-    // Get the current highest order to place new todo at the top
     const todos = await ctx.db.query('todos').collect();
     const highestOrder = Math.max(...todos.map(t => t.order || 0), 0);
     
@@ -67,12 +64,20 @@ export const deleteTodo = mutation({
 export const clearCompleted = mutation({
   args: {},
   handler: async (ctx) => {
-    // Get all todos and filter completed ones
-    const todos = await ctx.db.query('todos').collect();
-    const completedTodos = todos.filter(todo => todo.completed);
+    // More efficient approach using query with filter
+    const completedTodos = await ctx.db
+      .query('todos')
+      .filter((q) => q.eq(q.field('completed'), true))
+      .collect();
+    
+    console.log(`Clearing ${completedTodos.length} completed todos`);
     
     // Delete all completed todos
-    await Promise.all(completedTodos.map(todo => ctx.db.delete(todo._id)));
+    await Promise.all(
+      completedTodos.map(todo => ctx.db.delete(todo._id))
+    );
+    
+    return completedTodos.length;
   },
 });
 
@@ -81,7 +86,6 @@ export const updateTodoOrder = mutation({
     orderedIds: v.array(v.id('todos')) 
   },
   handler: async (ctx, args) => {
-    // Update each todo with its new order position
     for (let i = 0; i < args.orderedIds.length; i++) {
       await ctx.db.patch(args.orderedIds[i], { 
         order: i 
