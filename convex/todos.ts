@@ -4,11 +4,23 @@ import { mutation, query } from './_generated/server';
 export const getTodos = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db
+    // Try to get todos by order first, then fall back to creation date
+    const todosByOrder = await ctx.db
       .query('todos')
-      .withIndex('by_created')
-      .order('desc')
+      .withIndex('by_order')
+      .order('asc')
       .collect();
+    
+    // If no todos have order, get by creation date
+    if (todosByOrder.length === 0) {
+      return await ctx.db
+        .query('todos')
+        .withIndex('by_created')
+        .order('desc')
+        .collect();
+    }
+    
+    return todosByOrder;
   },
 });
 
@@ -17,10 +29,15 @@ export const addTodo = mutation({
     text: v.string(),
   },
   handler: async (ctx, args) => {
+    // Get the current highest order to place new todo at the top
+    const todos = await ctx.db.query('todos').collect();
+    const highestOrder = Math.max(...todos.map(t => t.order || 0), 0);
+    
     const todoId = await ctx.db.insert('todos', {
       text: args.text,
       completed: false,
       createdAt: Date.now(),
+      order: highestOrder + 1,
     });
     return todoId;
   },
@@ -50,16 +67,15 @@ export const deleteTodo = mutation({
 export const clearCompleted = mutation({
   args: {},
   handler: async (ctx) => {
-    const completedTodos = await ctx.db
-      .query('todos')
-      .withIndex('by_completed', (q) => q.eq('completed', true))
-      .collect();
-
-    await Promise.all(completedTodos.map((todo) => ctx.db.delete(todo._id)));
+    // Get all todos and filter completed ones
+    const todos = await ctx.db.query('todos').collect();
+    const completedTodos = todos.filter(todo => todo.completed);
+    
+    // Delete all completed todos
+    await Promise.all(completedTodos.map(todo => ctx.db.delete(todo._id)));
   },
 });
 
-// Add this new mutation for drag and drop reordering
 export const updateTodoOrder = mutation({
   args: { 
     orderedIds: v.array(v.id('todos')) 

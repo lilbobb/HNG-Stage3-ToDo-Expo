@@ -22,12 +22,18 @@ export default function FilterButtons({ currentFilter, onFilterChange }: FilterB
   ];
 
   return (
-    <View style={{ flexDirection: 'row' }}>
+    <View style={{ flexDirection: 'row', gap: 12 }}>
       {filters.map((filter) => (
         <TouchableOpacity
           key={filter.key}
           onPress={() => onFilterChange(filter.key)}
-          style={{ marginHorizontal: 8 }}
+          style={{ 
+            paddingHorizontal: 12, 
+            paddingVertical: 6,
+            borderRadius: 4,
+            backgroundColor: currentFilter === filter.key ? 'rgba(192, 88, 243, 0.1)' : 'transparent'
+          }}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Text
             style={{

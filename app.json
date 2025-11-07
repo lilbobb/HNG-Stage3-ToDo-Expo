@@ -3,9 +3,28 @@
     "name": "TodoApp",
     "slug": "todo-app",
     "scheme": "todo-app",
-    "platforms": ["ios", "android", "web"],
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
     "plugins": [
       "expo-router"
-    ]
+    ],
+    "android": {
+      "package": "com.anonymous.todoapp"
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c5501f20-c5c0-4b06-af9d-f876e20f4fcf"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.anonymous.todoapp",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    }
   }
 }

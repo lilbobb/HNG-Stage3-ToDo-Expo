@@ -62,7 +62,7 @@ export const styles = (isDark: boolean) => {
     },
     mainContent: {
       flex: 1,
-      paddingHorizontal: 24,
+      paddingHorizontal: isMobile ? 24 : 0, // Remove horizontal padding on desktop
       marginTop: -40,
       alignItems: 'center', 
     },
@@ -77,10 +77,11 @@ export const styles = (isDark: boolean) => {
       marginBottom: 16,
       maxHeight: isMobile ? 500 : 600,
       overflow: 'hidden',
-      width: isMobile ? '100%' : 540, 
+      width: isMobile ? '100%' : 540, // Fixed width on desktop
     },
     todoList: {
       maxHeight: 400,
+      flex: 1, // Take available space
     },
     footer: {
       flexDirection: 'row',
@@ -90,6 +91,8 @@ export const styles = (isDark: boolean) => {
       paddingVertical: 16,
       borderTopWidth: 1,
       borderTopColor: theme.border,
+      // Make footer stick to bottom
+      marginTop: 'auto',
     },
     mobileFooter: {
       flexDirection: 'row',
@@ -105,7 +108,7 @@ export const styles = (isDark: boolean) => {
       backgroundColor: theme.todoBackground,
       borderRadius: 5,
       marginTop: 16,
-      width: isMobile ? 364 : 540, 
+      width: isMobile ? '100%' : 540, // Fixed width on desktop
       alignSelf: 'center',
     },
     filterButtonsContainer: {
@@ -129,6 +132,8 @@ export const styles = (isDark: boolean) => {
     emptyState: {
       padding: 40,
       alignItems: 'center',
+      justifyContent: 'center',
+      flex: 1, // Take full height to center content
     },
     emptyStateText: {
       fontSize: 16,
@@ -140,7 +145,7 @@ export const styles = (isDark: boolean) => {
       fontSize: 14,
       color: theme.textSecondary,
       marginTop: isMobile ? 80 : 16,
-      width: isMobile ? '100%' : 540, 
+      width: isMobile ? '100%' : 540, // Fixed width on desktop
       alignSelf: 'center',
     },
   });
