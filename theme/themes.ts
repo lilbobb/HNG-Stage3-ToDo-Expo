@@ -15,6 +15,7 @@ export const themes = {
     completedText: '#D2D3DB',
     gradient: ['#57DDFF', '#C058F3'],
     todoBackground: '#FFFFFF',
+    clearRed: '#ff4444', // Add this line
   },
   dark: {
     background: '#161722',
@@ -40,13 +41,15 @@ export const styles = (isDark: boolean) => {
     },
     container: {
       flex: 1,
+      alignItems: 'center',
     },
     header: {
       paddingTop: 48,
       paddingBottom: 24,
-      width: isMobile ? '100%' : 540, 
+      width: '100%', 
+      maxWidth: 540, 
       alignSelf: 'center', 
-      paddingHorizontal: isMobile ? 24 : 0, 
+      paddingHorizontal: isMobile ? 20 : 0, 
     },
     headerRow: {
       flexDirection: 'row',
@@ -62,9 +65,29 @@ export const styles = (isDark: boolean) => {
     },
     mainContent: {
       flex: 1,
+      width: '100%',
+      alignItems: 'center',
       paddingHorizontal: isMobile ? 24 : 0,
-      marginTop: -40,
-      alignItems: 'center', 
+      marginTop: isMobile ? 0 : -40,
+    },
+    inputWrapper: {
+      width: '100%',
+      maxWidth: 540,
+      alignSelf: 'center',
+      marginBottom: isMobile ? 16 : 24,
+      marginTop: isMobile ? 20 : 60,
+      zIndex: 10,
+    },
+    inputContainer: {
+      backgroundColor: theme.surface,
+      borderRadius: 8,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 4 },
+      shadowOpacity: 0.1,
+      shadowRadius: 8,
+      elevation: 4,
+      marginBottom: isMobile ? 16 : 0,
+      marginTop: isMobile ? -20 : 0,
     },
     todoContainer: {
       backgroundColor: theme.surface,
@@ -74,13 +97,13 @@ export const styles = (isDark: boolean) => {
       shadowOpacity: 0.1,
       shadowRadius: 8,
       elevation: 4,
-      marginBottom: 16,
-      maxHeight: isMobile ? 500 : 600,
-      overflow: 'hidden',
-      width: isMobile ? '100%' : 540,
+      width: '100%',
+      maxWidth: 540,
+      flex: 1,
+      marginBottom: isMobile ? 0 : 16,
+      marginTop: isMobile ? -20 : 0,
     },
     todoList: {
-      maxHeight: 400,
       flex: 1,
     },
     footer: {
@@ -91,7 +114,7 @@ export const styles = (isDark: boolean) => {
       paddingVertical: 16,
       borderTopWidth: 1,
       borderTopColor: theme.border,
-      marginTop: 'auto',
+      height: 50,
     },
     mobileFooter: {
       flexDirection: 'row',
@@ -102,13 +125,15 @@ export const styles = (isDark: boolean) => {
       backgroundColor: theme.todoBackground,
       borderBottomLeftRadius: 5,
       borderBottomRightRadius: 5,
+      height: 50,
     },
     mobileFilterSection: {
       backgroundColor: theme.todoBackground,
       borderRadius: 5,
       marginTop: 16,
-      width: isMobile ? '100%' : 540,
-      alignSelf: 'center',
+      width: '100%',
+      maxWidth: 540,
+      marginBottom: 16,
     },
     filterButtonsContainer: {
       flexDirection: 'row', 
@@ -119,7 +144,7 @@ export const styles = (isDark: boolean) => {
     },
     itemsLeft: {
       fontSize: 14,
-      color: theme.textSecondary,
+      color: theme.text,
     },
     clearButton: {
       padding: 8,
@@ -130,11 +155,23 @@ export const styles = (isDark: boolean) => {
     },
     clearText: {
       fontSize: 14,
-      color: theme.textSecondary,
+      color: theme.text,
     },
     clearTextDisabled: {
       fontSize: 14,
       color: theme.textMuted,
+    },
+    mobileClearText: {
+      fontSize: 14,
+      color: theme.text, 
+      padding: 16,
+      marginBottom: 16,
+      fontWeight: '500',
+    },
+    mobileClearTextDisabled: {
+      fontSize: 14,
+      color: theme.textMuted,
+      fontWeight: '500',
     },
     emptyState: {
       padding: 40,
@@ -147,13 +184,7 @@ export const styles = (isDark: boolean) => {
       color: theme.textSecondary,
       textAlign: 'center',
     },
-    dragHint: {
-      textAlign: 'center',
-      fontSize: 14,
-      color: theme.textSecondary,
-      marginTop: isMobile ? 80 : 16,
-      width: isMobile ? '100%' : 540,
-      alignSelf: 'center',
-    },
   });
 };
+
+export default { themes, styles };

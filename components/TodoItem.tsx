@@ -3,12 +3,13 @@ import {
   View, 
   Text, 
   TouchableOpacity,
-  Animated
+  Animated,
+  StyleSheet
 } from 'react-native';
 import { useMutation } from 'convex/react';
 import { api } from '../convex/_generated/api';
 import { useTheme } from '../contexts/ThemeContext';
-import { styles as themeStyles, themes } from '../theme/themes';
+import { themes } from '../theme/themes';
 
 interface TodoItemProps {
   todo: {
@@ -22,7 +23,6 @@ interface TodoItemProps {
 
 export default function TodoItem({ todo, onLongPress, isActive }: TodoItemProps) {
   const { isDarkTheme } = useTheme();
-  const styles = themeStyles(isDarkTheme);
   const theme = isDarkTheme ? themes.dark : themes.light;
   
   const [fadeAnim] = useState(new Animated.Value(1));
@@ -30,9 +30,9 @@ export default function TodoItem({ todo, onLongPress, isActive }: TodoItemProps)
   const toggleTodo = useMutation(api.todos.toggleTodo);
   const deleteTodo = useMutation(api.todos.deleteTodo);
 
-  const handleToggle = () => {
-    toggleTodo({ id: todo._id, completed: !todo.completed });
-  };
+ const handleToggle = () => {
+  toggleTodo({ id: todo._id, completed: !todo.completed });
+};
 
   const handleDelete = () => {
     Animated.timing(fadeAnim, {
@@ -44,6 +44,31 @@ export default function TodoItem({ todo, onLongPress, isActive }: TodoItemProps)
     });
   };
 
+  const todoItemStyles = StyleSheet.create({
+    container: {
+      backgroundColor: theme.surface,
+      borderBottomWidth: 1,
+      borderBottomColor: theme.border,
+      opacity: isActive ? 0.5 : 1,
+    },
+    content: {
+      flexDirection: 'row', 
+      alignItems: 'center', 
+      paddingHorizontal: 20,
+      paddingVertical: 16,
+      minHeight: 50, 
+    },
+    text: {
+      flex: 1,
+      fontSize: 16,
+      color: todo.completed ? theme.completedText : theme.text,
+      textDecorationLine: todo.completed ? 'line-through' : 'none',
+    },
+    deleteButton: {
+      padding: 4,
+    }
+  });
+
   return (
     <Animated.View style={{ opacity: fadeAnim }}>
       <TouchableOpacity
@@ -52,21 +77,8 @@ export default function TodoItem({ todo, onLongPress, isActive }: TodoItemProps)
         activeOpacity={0.9}
         disabled={!onLongPress}
       >
-        <View style={[
-          styles.todoContainer, 
-          { 
-            marginBottom: 0, 
-            borderBottomWidth: 1, 
-            borderBottomColor: theme.border,
-            opacity: isActive ? 0.5 : 1,
-          }
-        ]}>
-          <View style={{ 
-            flexDirection: 'row', 
-            alignItems: 'center', 
-            paddingHorizontal: 20,
-            paddingVertical: 16 
-          }}>
+        <View style={todoItemStyles.container}>
+          <View style={todoItemStyles.content}>
             <TouchableOpacity
               onPress={handleToggle}
               style={{
@@ -86,16 +98,11 @@ export default function TodoItem({ todo, onLongPress, isActive }: TodoItemProps)
               )}
             </TouchableOpacity>
             
-            <Text style={{
-              flex: 1,
-              fontSize: 16,
-              color: todo.completed ? theme.completedText : theme.text,
-              textDecorationLine: todo.completed ? 'line-through' : 'none',
-            }}>
+            <Text style={todoItemStyles.text}>
               {todo.text}
             </Text>
             
-            <TouchableOpacity onPress={handleDelete}>
+            <TouchableOpacity onPress={handleDelete} style={todoItemStyles.deleteButton}>
               <Text style={{ color: theme.textSecondary, fontSize: 20 }}>×</Text>
             </TouchableOpacity>
           </View>

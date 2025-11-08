@@ -2,7 +2,6 @@ import React from 'react';
 import { Stack } from 'expo-router';
 import { ConvexProvider, ConvexReactClient } from 'convex/react';
 import { ThemeProvider } from '../contexts/ThemeContext';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const convexUrl = process.env.EXPO_PUBLIC_CONVEX_URL;
 
@@ -14,19 +13,17 @@ const convex = new ConvexReactClient(convexUrl!);
 
 export default function RootLayout() {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <ConvexProvider client={convex}>
-        <ThemeProvider>
-          <Stack>
-            <Stack.Screen 
-              name="index" 
-              options={{ 
-                headerShown: false
-              }} 
-            />
-          </Stack>
-        </ThemeProvider>
-      </ConvexProvider>
-    </GestureHandlerRootView>
+    <ConvexProvider client={convex}>
+      <ThemeProvider>
+        <Stack>
+          <Stack.Screen 
+            name="index" 
+            options={{ 
+              headerShown: false
+            }} 
+          />
+        </Stack>
+      </ThemeProvider>
+    </ConvexProvider>
   );
 }
